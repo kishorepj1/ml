@@ -1,0 +1,58 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.datasets import fetch_california_housing
+
+# Step 1: Load the California Housing dataset
+data = fetch_california_housing()
+print(data)
+df = pd.DataFrame(data.data, columns=data.feature_names)
+print(df)
+df['target'] = data.target  # Adding target variable (house value) for context
+
+# Step 2: Plot histograms for all numerical features
+def plot_histograms(df):
+    num_features = df.select_dtypes(include=[np.number]).columns  # Get numerical columns
+    for feature in num_features:
+        plt.figure(figsize=(8, 6))
+        sns.histplot(df[feature], kde=True, bins=30)
+        plt.title(f'Distribution of {feature}')
+        plt.xlabel(feature)
+        plt.ylabel('Frequency')
+        plt.show()
+
+# Step 3: Plot box plots for all numerical features
+def plot_boxplots(df):
+    num_features = df.select_dtypes(include=[np.number]).columns  # Get numerical columns
+    for feature in num_features:
+        plt.figure(figsize=(8, 6))
+        sns.boxplot(x=df[feature])
+        plt.title(f'Box Plot of {feature}')
+        plt.xlabel(feature)
+        plt.show()
+
+# Step 4: Analyze distribution and outliers
+def analyze_features(df):
+    num_features = df.select_dtypes(include=[np.number]).columns  # Get numerical columns
+    summary_stats = df[num_features].describe().transpose()  # Summary statistics
+    print("Summary Statistics of the Numerical Features:")
+    print(summary_stats)
+    
+    # Identify potential outliers by considering values beyond 1.5*IQR for each feature
+    for feature in num_features:
+        Q1 = df[feature].quantile(0.25)
+        Q3 = df[feature].quantile(0.75)
+        IQR = Q3 - Q1
+        lower_bound = Q1 - 1.5 * IQR
+        upper_bound = Q3 + 1.5 * IQR
+        
+        outliers = df[(df[feature] < lower_bound) | (df[feature] > upper_bound)]
+        print(f"\nOutliers for {feature}: {len(outliers)}")
+        if len(outliers) > 0:
+            print(outliers[feature].head())
+
+# Running the functions
+plot_histograms(df)
+plot_boxplots(df)
+analyze_features(df)

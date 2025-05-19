@@ -1,0 +1,46 @@
+import pandas as pd
+# Step 1: Read the CSV file into a pandas DataFrame
+def read_data(filename):
+    df = pd.read_csv(filename)
+    return df
+
+# Step 2: Implement the Find-S algorithm
+def find_s_algorithm(df):
+    # Assume the class label is in the last column (index -1)
+    # Separate the features (X) and the class labels (y)
+    X = df.iloc[:, :-1].values  # All columns except the last one (features)
+    y = df.iloc[:, -1].values   # Last column (class labels)
+    # Step 3: Find the first positive example and initialize the hypothesis
+    hypothesis = list(X[0])  # Start with the first positive example (most specific hypothesis)
+
+    # Step 4: For each positive example, generalize the hypothesis if necessary
+    for i in range(1, len(X)):
+        if y[i] == 1:  # Positive example
+            for j in range(len(hypothesis)):
+                # Generalize hypothesis to match the current example
+                if hypothesis[j] != X[i][j]:
+                    hypothesis[j] = '?'  # Use '?' to generalize (match any value)
+    
+    return hypothesis
+# Step 5: Display the learned hypothesis
+def display_hypothesis(hypothesis):
+    print("Learned Hypothesis:")
+    print(" - " + " AND ".join(str(feature) for feature in hypothesis))
+# Step 6: Main function to run the program
+def main():
+    # Replace 'train.csv' with your actual CSV file name
+    filename = 'train.csv'
+    
+    # Read the data
+    df = read_data(filename)
+    
+    # Apply the Find-S algorithm
+    hypothesis = find_s_algorithm(df)
+    
+    # Display the learned hypothesis
+    display_hypothesis(hypothesis)
+
+if __name__ == "__main__":
+    main()
+
+
